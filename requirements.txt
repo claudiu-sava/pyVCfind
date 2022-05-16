@@ -1,0 +1,4 @@
+cffi==1.15.0
+colorama==0.4.4
+pycparser==2.21
+python-magic-bin==0.4.14
