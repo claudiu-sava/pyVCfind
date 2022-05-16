@@ -13,7 +13,7 @@ import os
 ## globals
 FS_DIVIDER = 512
 FS_MIN_SIZE = 299008
-SIGNATURE = "application/octet-stream; charset=binary"
+SIGNATURE = "application/octet-stream"
 WIDTH = get_terminal_size().columns - 20
 RED = Fore.RED
 GREEN = Fore.GREEN
@@ -38,7 +38,7 @@ class VCContainer:
 
 
 ## prompt
-def prompt():
+def banner():
     print(f"{GREEN}               {RED} _    ________{GREEN}_____           __{RESET}")
     print(f"{GREEN}    ____  __  _{RED}| |  / / ____/{GREEN} __(_)___  ____/ /{RESET}")
     print(f"{GREEN}   / __ \/ / / /{RED} | / / /   {GREEN}/ /_/ / __ \/ __  / {RESET}")
@@ -46,6 +46,7 @@ def prompt():
     print(f"{GREEN} / .___/\__, / {RED}|___/\____/{GREEN}_/ /_/_/ /_/\__,_/   {RESET}")
     print(f"{GREEN}/_/    /____/  {RED}                                {RESET}")
     print(f"{CYAN}               (c) 2021 - Jakob Schaffarczyk{RESET}\n")
+    print(f"{CYAN}               (c) 2022 - Claudiu Sava (WinFx){RESET}\n")
 
 
 ## print progress bar
@@ -95,9 +96,9 @@ def file_size(path: str) -> int:
 
 ## get signature of file
 def signature(path) -> str:
-    m = magic.open(magic.MAGIC_MIME)
-    m.load()
-    return m.file(path)
+    m = magic.from_file(path, mime=True)
+    return m
+    
 
 
 ## function to be threaded
@@ -147,16 +148,19 @@ def check_file(path: str, entropy_threshold: float):
 
 ## print findings
 def print_findings():
-    cross = RED + "x" + RESET
-    check = GREEN + "✔️" + RESET
+    cross = RED + " X " + RESET
+    check = GREEN + " ✔️ " + RESET
     symbol = [cross, check]
     print("\n")
-    for finding in findings:
-        print(finding.path)
-        print(symbol[int(finding.verify_size)] + " filesize:  " + str(finding.size) + " B")
-        print(symbol[int(finding.verify_entropy)] +  " entropy:   " + str(finding.entropy))
-        print(symbol[int(finding.verify_signature)] +  " signature: " + str(finding.signature))
-        print()
+    if len(findings) == 0:
+        print(symbol[0] +  " This file does't look like an encrypted container\n")
+    else:
+        for finding in findings:
+            print("Printing results for: %s" % finding.path)
+            print(symbol[int(finding.verify_size)] + " filesize:  " + str(finding.size) + " B")
+            print(symbol[int(finding.verify_entropy)] +  " entropy:   " + str(finding.entropy))
+            print(symbol[int(finding.verify_signature)] +  " signature: " + str(finding.signature))
+            print()
 
 
 def main():
@@ -170,17 +174,32 @@ def main():
     JOBS = args.threads
     ENTROPY = args.entropy
     if args.directory:
-        prompt()
+        banner()
         t1 = time.time()
         info(f"Spawning {JOBS} threads\nStarted at {time.ctime(t1)}\n")
         check_directory(os.path.join(os.getcwd(), args.directory), JOBS, ENTROPY)
     elif args.file:
-        prompt()
+        banner()
         t1 = time.time()
         info(f"Started at {time.ctime(t1)}")
         check_file(os.path.join(os.getcwd(), args.file), ENTROPY)
     else:
-        error("One of (-d) or (-f) is required!")
+        question = input("Do you want so search a Directory or a file? (D/F) ")
+        if question == "d" or question == "D":
+            directoryPath = input("Enter the directory path: ")
+            banner()
+            t1 = time.time()
+            info(f"Spawning {JOBS} threads\nStarted at {time.ctime(t1)}\n")
+            check_directory(os.path.join(os.getcwd(), directoryPath), JOBS, ENTROPY)
+        
+        elif question == "f" or question == "F":
+            filePath = input("Enter the file path: ")
+            banner()
+            t1 = time.time()
+            info(f"Started at {time.ctime(t1)}")
+            check_file(os.path.join(os.getcwd(), filePath), ENTROPY)
+        else:
+            error("One of (-d) or (-f) is required!")
     
     t2 = time.time()
     print_findings()
