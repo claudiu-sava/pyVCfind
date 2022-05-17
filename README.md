@@ -38,6 +38,8 @@ You can try this by scanning the attached **secret** container.
 1. First of all make sure Python is installed.
 2. Install the requirements: `pip install -r requirements.txt`. 
 > If you are using Windows, install the `python-magic-bin==0.4.14` module. (`pip install python-magic-bin==0.4.14`)
+
+
 > If you are using Linux, install the `python-magic` module. (`pip install python-magic`)
 `
 ### Scan a directory
@@ -53,5 +55,5 @@ You can try this by scanning the attached **secret** container.
 ![pyVCfind](https://raw.githubusercontent.com/claudiu-sava/pyVCfind/main/example2.png)
 ### pyVCfind **hasn't** found a hidden container
 ![pyVCfind](https://raw.githubusercontent.com/claudiu-sava/pyVCfind/main/example1.png)
-
-~ Cheers
+  
+# Something didn't work? Let us know!
