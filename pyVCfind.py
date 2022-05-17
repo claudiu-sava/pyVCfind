@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from shutil import get_terminal_size
-from colorama import Fore
+from colorama import Fore, deinit
 from colorama import init
 import threading
 import argparse
@@ -69,6 +69,7 @@ def error(msg: str):
         print(f"{RED}[!]{RESET} {msg}")
     else:
         print(f"[!] {msg}")
+    deinit()
     sys.exit(1)
 
 
@@ -166,6 +167,7 @@ def print_findings():
             print(symbol[int(finding.verify_entropy)] +  " entropy:   " + str(finding.entropy))
             print(symbol[int(finding.verify_signature)] +  " signature: " + str(finding.signature))
             print()
+            
 
 def main():
     ap = argparse.ArgumentParser()
@@ -208,6 +210,7 @@ def main():
     t2 = time.time()
     print_findings()
     info(f"Took {round(t2-t1, 2)}s to execute")
+    deinit()
 
 
 if __name__ == "__main__":
