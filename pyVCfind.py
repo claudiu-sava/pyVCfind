@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from shutil import get_terminal_size
 from colorama import Fore
+from colorama import init
 import threading
 import argparse
 import magic
@@ -10,6 +11,10 @@ import sys
 import os
 
 
+# filter ANSI escape sequences out of any text sent to stdout or stderr
+# and replace them with equivalent Win32 calls.
+
+init() 
 ## globals
 FS_DIVIDER = 512
 FS_MIN_SIZE = 299008
@@ -100,7 +105,6 @@ def signature(path) -> str:
     return m
     
 
-
 ## function to be threaded
 def analyze(size: int, entropy: float):
     while len(paths) != 0:
@@ -134,10 +138,11 @@ def check_directory(path: str, jobs: int, entropy: float):
 def check_file(path: str, entropy_threshold: float):
     if not os.path.exists(path):
         error("File does not exist!")
-    
+
     vc = VCContainer(path=path)
     vc.size = file_size(vc.path)
     vc.signature = signature(vc.path)
+
     if vc.size >= FS_MIN_SIZE and vc.size % FS_DIVIDER == 0 and vc.signature == SIGNATURE:
         vc.entropy = entropy(vc.path)
         vc.verify_size = True
@@ -153,7 +158,7 @@ def print_findings():
     symbol = [cross, check]
     print("\n")
     if len(findings) == 0:
-        print(symbol[0] +  " This file does't look like an encrypted container\n")
+        print(symbol[0] +  "This file does't look like an encrypted container\n")
     else:
         for finding in findings:
             print("Printing results for: %s" % finding.path)
@@ -161,7 +166,6 @@ def print_findings():
             print(symbol[int(finding.verify_entropy)] +  " entropy:   " + str(finding.entropy))
             print(symbol[int(finding.verify_signature)] +  " signature: " + str(finding.signature))
             print()
-
 
 def main():
     ap = argparse.ArgumentParser()
