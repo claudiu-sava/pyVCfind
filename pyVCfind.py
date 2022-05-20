@@ -13,9 +13,10 @@ import os
 
 # filter ANSI escape sequences out of any text sent to stdout or stderr
 # and replace them with equivalent Win32 calls.
-
 init() 
+
 ## globals
+PYVCFIND_VERSION = "1.3" # According to myself after 2 pulls on js-on official repo
 FS_DIVIDER = 512
 FS_MIN_SIZE = 299008
 SIGNATURE = "application/octet-stream"
@@ -49,7 +50,7 @@ def banner():
     print(f"{GREEN}   / __ \/ / / /{RED} | / / /   {GREEN}/ /_/ / __ \/ __  / {RESET}")
     print(f"{GREEN}  / /_/ / /_/ /{RED}| |/ / /___{GREEN}/ __/ / / / / /_/ /  {RESET}")
     print(f"{GREEN} / .___/\__, / {RED}|___/\____/{GREEN}_/ /_/_/ /_/\__,_/   {RESET}")
-    print(f"{GREEN}/_/    /____/  {RED}                                {RESET}")
+    print(f"{GREEN}/_/    /____/  {RED}                  " + "Version: %s" % PYVCFIND_VERSION + f"{RESET}")
     print(f"{CYAN}               (c) 2021 - Jakob Schaffarczyk{RESET}\n")
     print(f"{CYAN}               (c) 2022 - Claudiu Sava (WinFx){RESET}\n")
 
@@ -159,7 +160,7 @@ def print_findings():
     symbol = [cross, check]
     print("\n")
     if len(findings) == 0:
-        print(symbol[0] +  "This file does't look like an encrypted container\n")
+        print(symbol[0] +  " This file does't look like an encrypted container\n")
     else:
         for finding in findings:
             print("Printing results for: %s" % finding.path)
